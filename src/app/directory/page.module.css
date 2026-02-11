@@ -1,0 +1,291 @@
+.directoryPage {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.header {
+    margin-bottom: var(--space-xl);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+}
+
+.searchActions {
+    display: flex;
+    gap: var(--space-md);
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.searchWrapper {
+    flex: 1;
+    position: relative;
+    max-width: 600px;
+}
+
+.searchIcon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-tertiary);
+    pointer-events: none;
+}
+
+.searchInput {
+    width: 100%;
+    padding: 10px 14px 10px 40px;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    font-size: var(--font-size-sm);
+    outline: none;
+    transition: all var(--transition-fast);
+}
+
+.searchInput:focus {
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+}
+
+.filterBar {
+    display: flex;
+    gap: var(--space-xs);
+    overflow-x: auto;
+    padding-bottom: var(--space-xs);
+    scrollbar-width: none;
+}
+
+.filterBar::-webkit-scrollbar {
+    display: none;
+}
+
+.filterChip {
+    padding: 6px 14px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-full);
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    transition: all var(--transition-fast);
+}
+
+.filterChip:hover {
+    border-color: var(--accent-primary);
+    color: var(--text-primary);
+}
+
+.filterActive {
+    background: var(--accent-primary) !important;
+    border-color: var(--accent-primary) !important;
+    color: white !important;
+}
+
+/* Grid */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: var(--space-lg);
+}
+
+.card {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    padding: var(--space-lg) !important;
+    /* Overriding common card padding if needed */
+}
+
+.cardTop {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: var(--space-md);
+}
+
+.categoryBadge {
+    padding: 4px 10px;
+    border-radius: var(--radius-full);
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.rating {
+    display: flex;
+    gap: 2px;
+    color: #f59e0b;
+}
+
+.name {
+    font-size: var(--font-size-xl);
+    font-weight: 800;
+    margin-bottom: var(--space-xs);
+    color: var(--text-primary);
+}
+
+.description {
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+    line-height: 1.5;
+    margin-bottom: var(--space-lg);
+    flex: 1;
+}
+
+.highlight {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--accent-primary);
+    background: rgba(99, 102, 241, 0.1);
+    padding: 4px 10px;
+    border-radius: var(--radius-sm);
+    display: inline-block;
+    margin-bottom: var(--space-md);
+}
+
+.pricing {
+    border-top: 1px solid var(--border-subtle);
+    padding-top: var(--space-md);
+    margin-bottom: var(--space-lg);
+}
+
+.pricingHeader {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    margin-bottom: var(--space-sm);
+    display: block;
+}
+
+.pricingList {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+}
+
+.pricingItem {
+    display: flex;
+    justify-content: space-between;
+    font-size: var(--font-size-xs);
+}
+
+.tierName {
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.tierPrice {
+    color: var(--text-primary);
+    font-weight: 700;
+}
+
+.cardActions {
+    display: flex;
+    gap: var(--space-sm);
+    margin-top: auto;
+}
+
+.cardActions .btn {
+    flex: 1;
+    font-size: 12px;
+}
+
+.adminActions {
+    display: flex;
+    gap: var(--space-xs);
+}
+
+/* Form in Modal */
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+}
+
+.formRow {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-lg);
+}
+
+.formGroup {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+}
+
+.label {
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.input,
+.select,
+.textarea {
+    padding: 10px 14px;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    font-size: var(--font-size-sm);
+    outline: none;
+    transition: all var(--transition-fast);
+}
+
+.input:focus,
+.select:focus,
+.textarea:focus {
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+}
+
+.textarea {
+    resize: vertical;
+}
+
+.pricingFormList {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+    background: rgba(0, 0, 0, 0.1);
+    padding: var(--space-md);
+    border-radius: var(--radius-md);
+}
+
+.pricingFormRow {
+    display: flex;
+    gap: var(--space-sm);
+    align-items: center;
+}
+
+/* Skeleton */
+.skeletonCard {
+    height: 380px;
+    background: linear-gradient(90deg, var(--bg-card) 25%, var(--bg-card-hover) 50%, var(--bg-card) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: var(--radius-lg);
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: 200% 0;
+    }
+
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+@media (max-width: 768px) {
+    .grid {
+        grid-template-columns: 1fr;
+    }
+}

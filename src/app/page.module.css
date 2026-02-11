@@ -1,0 +1,195 @@
+.dashboard {
+  max-width: 1200px;
+}
+
+/* Metrics */
+.metricsGrid {
+  margin-bottom: var(--space-xl);
+}
+
+.metricLink {
+  text-decoration: none;
+  color: inherit;
+}
+
+.metricLink:hover {
+  color: inherit;
+}
+
+.metricSub {
+  font-size: var(--font-size-xs);
+  color: var(--text-tertiary);
+  font-weight: 500;
+}
+
+/* Main Content Grid */
+.mainGrid {
+  margin-bottom: var(--space-xl);
+}
+
+/* Quick Actions */
+.actionsGrid {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.actionCard {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-md) var(--space-lg);
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+.actionCard:hover {
+  color: inherit;
+}
+
+.actionIcon {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.actionLabel {
+  font-weight: 600;
+  font-size: var(--font-size-sm);
+  flex: 1;
+}
+
+.actionArrow {
+  color: var(--text-tertiary);
+  transition: all var(--transition-fast);
+}
+
+.actionCard:hover .actionArrow {
+  color: var(--accent-primary);
+  transform: translateX(4px);
+}
+
+/* Insights */
+.insightsList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.insightCard {
+  display: flex;
+  gap: var(--space-md);
+  padding: var(--space-md) var(--space-lg);
+}
+
+.insightIcon {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.insightContent h4 {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.insightContent p {
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+/* Recent Activity */
+.recentList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.recentItem {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-md) var(--space-lg);
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+.recentItem:hover {
+  color: inherit;
+}
+
+.recentIcon {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.recentInfo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.recentName {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.recentMeta {
+  font-size: var(--font-size-xs);
+  color: var(--text-tertiary);
+}
+
+.recentTime {
+  font-size: var(--font-size-xs);
+  color: var(--text-tertiary);
+  font-weight: 500;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+/* Live Indicator */
+.liveIndicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--font-size-xs);
+  color: var(--text-tertiary);
+  font-weight: 500;
+}
+
+.liveDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-success);
+  animation: pulse 2s infinite;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .mainGrid {
+    grid-template-columns: 1fr;
+  }
+}

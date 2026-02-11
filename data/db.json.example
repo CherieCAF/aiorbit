@@ -1,0 +1,31 @@
+{
+  "tools": [
+    {
+      "id": "example-tool-1",
+      "name": "AIOrbit Example",
+      "category": "Code",
+      "url": "https://example.com",
+      "monthlyCost": 0,
+      "dataAccess": "limited",
+      "status": "active",
+      "purpose": "Template tool for first-time setup",
+      "addedAt": "2026-02-11T00:00:00.000Z",
+      "updatedAt": "2026-02-11T00:00:00.000Z"
+    }
+  ],
+  "goals": [],
+  "decisions": [],
+  "learning": [
+    {
+      "id": "learn-1",
+      "title": "Welcome to AIOrbit",
+      "description": "Start by adding your first AI tool to the registry.",
+      "category": "Getting Started",
+      "tags": ["guide"],
+      "isRead": false,
+      "isBookmarked": true,
+      "createdAt": "2026-02-11T00:00:00.000Z"
+    }
+  ],
+  "directory": []
+}

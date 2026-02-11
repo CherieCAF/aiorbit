@@ -1,0 +1,219 @@
+.learningPage {
+    max-width: 1200px;
+}
+
+/* Toolbar */
+.toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--space-xl);
+}
+
+.filters {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.filterGroup {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: 8px 14px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    color: var(--text-secondary);
+}
+
+.filterSelect {
+    background: none;
+    border: none;
+    color: var(--text-primary);
+    font-size: var(--font-size-sm);
+    font-family: var(--font-sans);
+    outline: none;
+    cursor: pointer;
+}
+
+.filterSelect option {
+    background: var(--bg-secondary);
+}
+
+.bookmarkFilter {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    color: var(--text-secondary);
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    transition: all var(--transition-fast);
+}
+
+.bookmarkFilter:hover {
+    color: var(--text-primary);
+    border-color: var(--border-default);
+}
+
+.bookmarkFilterActive {
+    color: var(--accent-primary-hover) !important;
+    background: rgba(99, 102, 241, 0.1) !important;
+    border-color: var(--accent-primary) !important;
+}
+
+/* Feed */
+.feed {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-lg);
+}
+
+.feedCard {
+    padding: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.readCard {
+    opacity: 0.6;
+}
+
+.cardAccent {
+    height: 3px;
+    width: 100%;
+}
+
+.cardContent {
+    padding: var(--space-lg);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    flex: 1;
+}
+
+.cardHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.cardActions {
+    display: flex;
+    gap: 4px;
+}
+
+.actionBtn {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-tertiary);
+    transition: all var(--transition-fast);
+}
+
+.actionBtn:hover {
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.readBtn {
+    color: var(--color-success) !important;
+}
+
+.bookmarkedBtn {
+    color: var(--accent-primary-hover) !important;
+}
+
+.cardTitle {
+    font-size: var(--font-size-base);
+    font-weight: 700;
+    line-height: 1.4;
+}
+
+.cardDesc {
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+    line-height: 1.6;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.cardFooter {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: auto;
+    padding-top: var(--space-sm);
+    border-top: 1px solid var(--border-subtle);
+}
+
+.tags {
+    display: flex;
+    gap: var(--space-xs);
+    flex-wrap: wrap;
+}
+
+.tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    padding: 2px 8px;
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-full);
+    font-size: 10px;
+    color: var(--text-tertiary);
+    font-weight: 500;
+    text-transform: lowercase;
+}
+
+.readMore {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    color: var(--accent-primary);
+    white-space: nowrap;
+}
+
+.readMore:hover {
+    color: var(--accent-primary-hover);
+}
+
+/* Loading */
+.loadingList {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-lg);
+}
+
+.skeleton {
+    height: 200px;
+    background: linear-gradient(90deg, var(--bg-card) 25%, var(--bg-card-hover) 50%, var(--bg-card) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+
+    .feed,
+    .loadingList {
+        grid-template-columns: 1fr;
+    }
+
+    .filters {
+        flex-direction: column;
+        align-items: stretch;
+    }
+}
