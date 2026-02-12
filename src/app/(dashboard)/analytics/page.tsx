@@ -13,6 +13,7 @@ import {
 import Link from 'next/link';
 import type { Tool, Goal, Decision } from '@/lib/db';
 import { generateInsights, TOOL_GOAL_MAP, type Insight } from '@/lib/insights';
+import SegmentedControl from '@/components/SegmentedControl';
 import styles from './page.module.css';
 
 const CATEGORY_COLORS: Record<string, string> = {
@@ -89,6 +90,7 @@ export default function AnalyticsPage() {
     const [goals, setGoals] = useState<Goal[]>([]);
     const [decisions, setDecisions] = useState<Decision[]>([]);
     const [loading, setLoading] = useState(true);
+    const [activeTab, setActiveTab] = useState<'spend' | 'compliance' | 'performance'>('spend');
 
     const fetchData = useCallback(async () => {
         try {
@@ -197,279 +199,236 @@ export default function AnalyticsPage() {
                 <p>Deep dive into your AI ecosystem</p>
             </div>
 
-            {/* Stats Row */}
-            <div className={`${styles.statsRow} animate-fade-in stagger-1`}>
-                {stats.map((stat) => (
-                    <div key={stat.label} className={`card ${styles.statCard}`}>
-                        <div className={styles.statIcon} style={{ background: `${stat.color}18`, color: stat.color }}>
-                            <stat.icon size={20} />
-                        </div>
-                        <div className={styles.statValue}>{stat.value}</div>
-                        <div className={styles.statLabel}>{stat.label}</div>
-                    </div>
-                ))}
+            {/* Navigation Tabs */}
+            <div style={{ marginBottom: 'var(--space-xl)', display: 'flex', justifyContent: 'center' }}>
+                <SegmentedControl
+                    options={[
+                        { id: 'spend', label: 'Financials', icon: <DollarSign size={16} /> },
+                        { id: 'compliance', label: 'Compliance & Risk', icon: <Shield size={16} /> },
+                        { id: 'performance', label: 'Performance (ROI)', icon: <Target size={16} /> },
+                    ]}
+                    activeId={activeTab}
+                    onChange={(id) => setActiveTab(id as any)}
+                />
             </div>
 
-            {/* Charts Grid */}
-            <div className={`${styles.chartsGrid} animate-fade-in stagger-2`}>
-                {/* Tool Category Breakdown */}
-                {categoryData.length > 0 && (
-                    <div className={`card ${styles.chartCard}`}>
-                        <h3 className={styles.chartTitle}><BarChart3 size={18} /> Tools by Category</h3>
-                        <div className={styles.chartContainer}>
-                            <ResponsiveContainer width="100%" height={220}>
-                                <PieChart>
-                                    <Pie data={categoryData} cx="50%" cy="50%" innerRadius={50} outerRadius={85}
-                                        paddingAngle={3} dataKey="value" stroke="none">
-                                        {categoryData.map((d, i) => <Cell key={i} fill={d.color} />)}
-                                    </Pie>
-                                    <Tooltip content={<CustomTooltip />} />
-                                </PieChart>
-                            </ResponsiveContainer>
-                            <div className={styles.chartLegend}>
-                                {categoryData.map((d) => (
-                                    <div key={d.name} className={styles.legendItem}>
-                                        <div className={styles.legendDot} style={{ background: d.color }} />
-                                        <span>{d.name}</span>
-                                        <span className={styles.legendValue}>{d.value}</span>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-                )}
-
-                {/* Spending by Category */}
-                {spendingData.length > 0 && (
-                    <div className={`card ${styles.chartCard}`}>
-                        <h3 className={styles.chartTitle}><DollarSign size={18} /> Spending by Category</h3>
-                        <div className={styles.chartContainer}>
-                            <ResponsiveContainer width="100%" height={220}>
-                                <BarChart data={spendingData} layout="vertical" margin={{ left: 20, right: 20 }}>
-                                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-                                    <XAxis type="number" tick={{ fill: '#94a3b8', fontSize: 12 }} tickFormatter={(v) => `$${v}`} />
-                                    <YAxis type="category" dataKey="name" tick={{ fill: '#e2e8f0', fontSize: 12 }} width={90} />
-                                    <Tooltip content={<CustomTooltip />} />
-                                    <Bar dataKey="spend" name="$ Spend" radius={[0, 6, 6, 0]}>
-                                        {spendingData.map((d, i) => (
-                                            <Cell key={i} fill={CATEGORY_COLORS[d.name] || '#64748b'} />
-                                        ))}
-                                    </Bar>
-                                </BarChart>
-                            </ResponsiveContainer>
-                        </div>
-                    </div>
-                )}
-
-                {/* Goal Progress */}
-                {goalProgressData.length > 0 && (
-                    <div className={`card ${styles.chartCard}`}>
-                        <h3 className={styles.chartTitle}><Target size={18} /> Goal Progress</h3>
-                        <div className={styles.chartContainer}>
-                            <ResponsiveContainer width="100%" height={220}>
-                                <BarChart data={goalProgressData} margin={{ left: 10, right: 20 }}>
-                                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-                                    <XAxis dataKey="name" tick={{ fill: '#94a3b8', fontSize: 11 }} interval={0} angle={-20} textAnchor="end" height={50} />
-                                    <YAxis tick={{ fill: '#94a3b8', fontSize: 12 }} domain={[0, 100]} tickFormatter={(v) => `${v}%`} />
-                                    <Tooltip content={<CustomTooltip />} />
-                                    <Bar dataKey="progress" name="Progress" radius={[6, 6, 0, 0]}>
-                                        {goalProgressData.map((d, i) => <Cell key={i} fill={d.color} />)}
-                                    </Bar>
-                                </BarChart>
-                            </ResponsiveContainer>
-                        </div>
-                    </div>
-                )}
-
-                {/* Decision Outcomes */}
-                {outcomeData.length > 0 && (
-                    <div className={`card ${styles.chartCard}`}>
-                        <h3 className={styles.chartTitle}><TrendingUp size={18} /> Decision Outcomes</h3>
-                        <div className={styles.chartContainer}>
-                            <ResponsiveContainer width="100%" height={220}>
-                                <PieChart>
-                                    <Pie data={outcomeData} cx="50%" cy="50%" innerRadius={50} outerRadius={85}
-                                        paddingAngle={3} dataKey="value" stroke="none">
-                                        {outcomeData.map((d, i) => <Cell key={i} fill={d.color} />)}
-                                    </Pie>
-                                    <Tooltip content={<CustomTooltip />} />
-                                </PieChart>
-                            </ResponsiveContainer>
-                            <div className={styles.chartLegend}>
-                                {outcomeData.map((d) => (
-                                    <div key={d.name} className={styles.legendItem}>
-                                        <div className={styles.legendDot} style={{ background: d.color }} />
-                                        <span>{d.name}</span>
-                                        <span className={styles.legendValue}>{d.value}</span>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-                )}
-            </div>
-
-            {/* Data Privacy & Risk Guidance */}
-            <div className={`card ${styles.privacyCard} animate-fade-in stagger-3`}>
-                <h3 className={styles.chartTitle}><Shield size={18} /> Data Privacy &amp; Risk Guidance</h3>
-
-                {/* Access Level Breakdown */}
-                {dataAccessData.length > 0 && (
-                    <div className={styles.privacyGrid}>
-                        {dataAccessData.map((d) => (
-                            <div key={d.name} className={styles.privacyItem}>
-                                <d.icon size={24} style={{ color: d.color }} />
-                                <div className={styles.privacyValue}>{d.value}</div>
-                                <div className={styles.privacyLabel}>{d.name}</div>
+            {activeTab === 'spend' && (
+                <>
+                    {/* Stats Row */}
+                    <div className={`${styles.statsRow} animate-fade-in stagger-1`}>
+                        {stats.map((stat) => (
+                            <div key={stat.label} className={`card ${styles.statCard}`}>
+                                <div className={styles.statIcon} style={{ background: `${stat.color}18`, color: stat.color }}>
+                                    <stat.icon size={20} />
+                                </div>
+                                <div className={styles.statValue}>{stat.value}</div>
+                                <div className={styles.statLabel}>{stat.label}</div>
                             </div>
                         ))}
                     </div>
-                )}
 
-                {/* Full Access Tools — Specific Guidance */}
-                {tools.filter(t => t.dataAccess === 'full').length > 0 && (
-                    <div className={styles.riskSection}>
-                        <h4 className={styles.riskTitle}>
-                            <ShieldAlert size={16} style={{ color: '#ef4444' }} />
-                            Full Access Tools — How to Lower Risk
-                        </h4>
-                        <div className={styles.riskToolList}>
-                            {tools.filter(t => t.dataAccess === 'full').map((tool) => (
-                                <div key={tool.id} className={styles.riskToolItem}>
-                                    <span className={styles.riskToolName}>{tool.name}</span>
-                                    <span className={styles.riskToolTips}>
-                                        {getRiskTips(tool.name).map((tip, i) => (
-                                            <span key={i} className={styles.riskTip}>{tip}</span>
+                    {/* Financial Charts Grid */}
+                    <div className={`${styles.chartsGrid} animate-fade-in stagger-2`}>
+                        {spendingData.length > 0 && (
+                            <div className={`card ${styles.chartCard}`}>
+                                <h3 className={styles.chartTitle}><DollarSign size={18} /> Spending by Category</h3>
+                                <div className={styles.chartContainer}>
+                                    <ResponsiveContainer width="100%" height={220}>
+                                        <BarChart data={spendingData} layout="vertical" margin={{ left: 20, right: 20 }}>
+                                            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+                                            <XAxis type="number" tick={{ fill: '#94a3b8', fontSize: 12 }} tickFormatter={(v) => `$${v}`} />
+                                            <YAxis type="category" dataKey="name" tick={{ fill: '#e2e8f0', fontSize: 12 }} width={90} />
+                                            <Tooltip content={<CustomTooltip />} />
+                                            <Bar dataKey="spend" name="$ Spend" radius={[0, 6, 6, 0]}>
+                                                {spendingData.map((d, i) => (
+                                                    <Cell key={i} fill={CATEGORY_COLORS[d.name] || '#64748b'} />
+                                                ))}
+                                            </Bar>
+                                        </BarChart>
+                                    </ResponsiveContainer>
+                                </div>
+                            </div>
+                        )}
+
+                        {categoryData.length > 0 && (
+                            <div className={`card ${styles.chartCard}`}>
+                                <h3 className={styles.chartTitle}><BarChart3 size={18} /> Tools by Category</h3>
+                                <div className={styles.chartContainer}>
+                                    <ResponsiveContainer width="100%" height={220}>
+                                        <PieChart>
+                                            <Pie data={categoryData} cx="50%" cy="50%" innerRadius={50} outerRadius={85}
+                                                paddingAngle={3} dataKey="value" stroke="none">
+                                                {categoryData.map((d, i) => <Cell key={i} fill={d.color} />)}
+                                            </Pie>
+                                            <Tooltip content={<CustomTooltip />} />
+                                        </PieChart>
+                                    </ResponsiveContainer>
+                                    <div className={styles.chartLegend}>
+                                        {categoryData.map((d) => (
+                                            <div key={d.name} className={styles.legendItem}>
+                                                <div className={styles.legendDot} style={{ background: d.color }} />
+                                                <span>{d.name}</span>
+                                                <span className={styles.legendValue}>{d.value}</span>
+                                            </div>
                                         ))}
-                                    </span>
+                                    </div>
                                 </div>
-                            ))}
-                        </div>
+                            </div>
+                        )}
                     </div>
-                )}
+                </>
+            )}
 
-                {/* General Best Practices */}
-                <div className={styles.riskSection}>
-                    <h4 className={styles.riskTitle}>
-                        <ShieldCheck size={16} style={{ color: '#22c55e' }} />
-                        General Best Practices
-                    </h4>
-                    <div className={styles.tipsList}>
-                        <div className={styles.tipItem}>
-                            <span className={styles.tipBullet}>1</span>
-                            <div>
-                                <strong>Opt out of training</strong>
-                                <p>Most AI tools let you disable model training on your data. Check settings → privacy in each tool.</p>
-                            </div>
-                        </div>
-                        <div className={styles.tipItem}>
-                            <span className={styles.tipBullet}>2</span>
-                            <div>
-                                <strong>Use API access when possible</strong>
-                                <p>API usage typically has stronger privacy guarantees than web chat interfaces — data isn&apos;t stored for training.</p>
-                            </div>
-                        </div>
-                        <div className={styles.tipItem}>
-                            <span className={styles.tipBullet}>3</span>
-                            <div>
-                                <strong>Avoid sharing sensitive data</strong>
-                                <p>Don&apos;t paste passwords, API keys, financial records, or personal identifiers into AI tools with full access.</p>
-                            </div>
-                        </div>
-                        <div className={styles.tipItem}>
-                            <span className={styles.tipBullet}>4</span>
-                            <div>
-                                <strong>Review data retention policies</strong>
-                                <p>Check how long each tool stores your conversations and data. Some retain for 30 days, others indefinitely.</p>
-                            </div>
-                        </div>
-                        <div className={styles.tipItem}>
-                            <span className={styles.tipBullet}>5</span>
-                            <div>
-                                <strong>Consider local alternatives</strong>
-                                <p>For sensitive work, try local models like Ollama or LM Studio — your data never leaves your machine.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            {activeTab === 'compliance' && (
+                <div className="animate-fade-in">
+                    {/* Data Privacy & Risk Guidance */}
+                    <div className={`card ${styles.privacyCard}`}>
+                        <h3 className={styles.chartTitle}><Shield size={18} /> Data Privacy &amp; Risk Guidance</h3>
 
-                {/* Overall status */}
-                <p className={styles.privacyNote}>
-                    {tools.filter(t => t.dataAccess === 'full').length > 0
-                        ? `⚠️ ${tools.filter(t => t.dataAccess === 'full').length} tool${tools.filter(t => t.dataAccess === 'full').length > 1 ? 's have' : ' has'} full access to your data. Follow the tips above to minimize exposure.`
-                        : '✅ No tools have full data access. Your data privacy posture looks great.'}
-                </p>
-            </div>
-
-            {/* Smart Insights */}
-            <div className="animate-fade-in stagger-3">
-                <div className="section-header">
-                    <h2><Zap size={20} /> Smart Insights</h2>
-                    <span className="badge badge-primary">{insights.length} insight{insights.length !== 1 ? 's' : ''}</span>
-                </div>
-                <div className={styles.insightsGrid}>
-                    {insights.map((insight) => {
-                        const Icon = INSIGHT_ICONS[insight.type];
-                        const color = INSIGHT_COLORS[insight.type];
-                        return (
-                            <div key={insight.id} className={`glass-card ${styles.insightCard}`}>
-                                <div className={styles.insightIcon} style={{ background: `${color}18`, color }}>
-                                    <Icon size={18} />
-                                </div>
-                                <div className={styles.insightContent}>
-                                    <h4>{insight.title}</h4>
-                                    <p>{insight.description}</p>
-                                </div>
+                        {/* Access Level Breakdown */}
+                        {dataAccessData.length > 0 && (
+                            <div className={styles.privacyGrid}>
+                                {dataAccessData.map((d) => (
+                                    <div key={d.name} className={styles.privacyItem}>
+                                        <d.icon size={24} style={{ color: d.color }} />
+                                        <div className={styles.privacyValue}>{d.value}</div>
+                                        <div className={styles.privacyLabel}>{d.name}</div>
+                                    </div>
+                                ))}
                             </div>
-                        );
-                    })}
-                </div>
-            </div>
+                        )}
 
-            {/* Tool-Goal Recommendations */}
-            {relevantRecommendations.length > 0 && (
-                <div className="animate-fade-in stagger-4">
-                    <div className="section-header">
-                        <h2><Lightbulb size={20} /> Best Tools for Your Goals</h2>
-                    </div>
-                    <p className={styles.recSubtitle}>Based on your active goals, here's what types of AI tools can help most:</p>
-                    <div className={styles.recGrid}>
-                        {relevantRecommendations.map((rec, i) => (
-                            <div key={i} className={`card ${styles.recCard}`}>
-                                <div className={styles.recHeader}>
-                                    <span className="badge" style={{ background: `${CATEGORY_COLORS[rec.toolCategory] || '#64748b'}18`, color: CATEGORY_COLORS[rec.toolCategory] || '#64748b' }}>
-                                        {rec.toolCategory}
-                                    </span>
-                                    <ArrowRight size={14} className={styles.recArrow} />
-                                    <span className="badge badge-primary">{rec.goalCategory} Goals</span>
-                                </div>
-                                <p className={styles.recDesc}>{rec.description}</p>
-                                <div className={styles.recExamples}>
-                                    <strong>Try:</strong>
-                                    {rec.examples.map((ex, j) => (
-                                        <span key={j} className={styles.recExample}>{ex}</span>
+                        {/* Full Access Tools — Specific Guidance */}
+                        {tools.filter(t => t.dataAccess === 'full').length > 0 && (
+                            <div className={styles.riskSection}>
+                                <h4 className={styles.riskTitle}>
+                                    <ShieldAlert size={16} style={{ color: '#ef4444' }} />
+                                    Full Access Tools — How to Lower Risk
+                                </h4>
+                                <div className={styles.riskToolList}>
+                                    {tools.filter(t => t.dataAccess === 'full').map((tool) => (
+                                        <div key={tool.id} className={styles.riskToolItem}>
+                                            <span className={styles.riskToolName}>{tool.name}</span>
+                                            <span className={styles.riskToolTips}>
+                                                {getRiskTips(tool.name).map((tip, i) => (
+                                                    <span key={i} className={styles.riskTip}>{tip}</span>
+                                                ))}
+                                            </span>
+                                        </div>
                                     ))}
                                 </div>
                             </div>
-                        ))}
+                        )}
+
+                        {/* General Best Practices */}
+                        <div className={styles.riskSection}>
+                            <h4 className={styles.riskTitle}>
+                                <ShieldCheck size={16} style={{ color: '#22c55e' }} />
+                                General Best Practices
+                            </h4>
+                            <div className={styles.tipsList}>
+                                <div className={styles.tipItem}>
+                                    <span className={styles.tipBullet}>1</span>
+                                    <div>
+                                        <strong>Opt out of training</strong>
+                                        <p>Most AI tools let you disable model training on your data. Check settings → privacy in each tool.</p>
+                                    </div>
+                                </div>
+                                <div className={styles.tipItem}>
+                                    <span className={styles.tipBullet}>2</span>
+                                    <div>
+                                        <strong>Use API access when possible</strong>
+                                        <p>API usage typically has stronger privacy guarantees than web chat interfaces — data isn&apos;t stored for training.</p>
+                                    </div>
+                                </div>
+                                <div className={styles.tipItem}>
+                                    <span className={styles.tipBullet}>3</span>
+                                    <div>
+                                        <strong>Avoid sharing sensitive data</strong>
+                                        <p>Don&apos;t paste passwords, API keys, financial records, or personal identifiers into AI tools with full access.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             )}
 
-            {/* Landscape Note */}
-            <div className={`glass-card ${styles.landscapeNote} animate-fade-in stagger-4`}>
-                <div className={styles.landscapeIcon}><TrendingUp size={24} /></div>
-                <div>
-                    <h3>The AI Landscape Moves Fast</h3>
-                    <p>
-                        Tool recommendations evolve rapidly. New models drop weekly, pricing changes constantly, and today's best tool may be tomorrow's second choice.
-                        AIOrbit helps you track what works <em>for you</em> — your decisions, outcomes, and tool effectiveness are the most reliable signal in a noisy market.
-                    </p>
-                    <Link href="/tools" className={styles.landscapeLink}>
-                        Review your tools <ArrowRight size={14} />
-                    </Link>
+            {activeTab === 'performance' && (
+                <div className="animate-fade-in">
+                    {/* Charts Grid - Goal Progress */}
+                    <div className={styles.chartsGrid}>
+                        {goalProgressData.length > 0 && (
+                            <div className={`card ${styles.chartCard}`}>
+                                <h3 className={styles.chartTitle}><Target size={18} /> Goal Progress</h3>
+                                <div className={styles.chartContainer}>
+                                    <ResponsiveContainer width="100%" height={220}>
+                                        <BarChart data={goalProgressData} margin={{ left: 10, right: 20 }}>
+                                            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+                                            <XAxis dataKey="name" tick={{ fill: '#94a3b8', fontSize: 11 }} interval={0} angle={-20} textAnchor="end" height={50} />
+                                            <YAxis tick={{ fill: '#94a3b8', fontSize: 12 }} domain={[0, 100]} tickFormatter={(v) => `${v}%`} />
+                                            <Tooltip content={<CustomTooltip />} />
+                                            <Bar dataKey="progress" name="Progress" radius={[6, 6, 0, 0]}>
+                                                {goalProgressData.map((d, i) => <Cell key={i} fill={d.color} />)}
+                                            </Bar>
+                                        </BarChart>
+                                    </ResponsiveContainer>
+                                </div>
+                            </div>
+                        )}
+
+                        {outcomeData.length > 0 && (
+                            <div className={`card ${styles.chartCard}`}>
+                                <h3 className={styles.chartTitle}><TrendingUp size={18} /> Decision Outcomes</h3>
+                                <div className={styles.chartContainer}>
+                                    <ResponsiveContainer width="100%" height={220}>
+                                        <PieChart>
+                                            <Pie data={outcomeData} cx="50%" cy="50%" innerRadius={50} outerRadius={85}
+                                                paddingAngle={3} dataKey="value" stroke="none">
+                                                {outcomeData.map((d, i) => <Cell key={i} fill={d.color} />)}
+                                            </Pie>
+                                            <Tooltip content={<CustomTooltip />} />
+                                        </PieChart>
+                                    </ResponsiveContainer>
+                                    <div className={styles.chartLegend}>
+                                        {outcomeData.map((d) => (
+                                            <div key={d.name} className={styles.legendItem}>
+                                                <div className={styles.legendDot} style={{ background: d.color }} />
+                                                <span>{d.name}</span>
+                                                <span className={styles.legendValue}>{d.value}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Smart Insights */}
+                    <div className="section-header" style={{ marginTop: 'var(--space-xl)' }}>
+                        <h2><Zap size={20} /> Smart Insights</h2>
+                        <span className="badge badge-primary">{insights.length} insight{insights.length !== 1 ? 's' : ''}</span>
+                    </div>
+                    <div className={styles.insightsGrid}>
+                        {insights.map((insight) => {
+                            const Icon = INSIGHT_ICONS[insight.type];
+                            const color = INSIGHT_COLORS[insight.type];
+                            return (
+                                <div key={insight.id} className={`glass-card ${styles.insightCard}`}>
+                                    <div className={styles.insightIcon} style={{ background: `${color}18`, color }}>
+                                        <Icon size={18} />
+                                    </div>
+                                    <div className={styles.insightContent}>
+                                        <h4>{insight.title}</h4>
+                                        <p>{insight.description}</p>
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
                 </div>
-            </div>
+            )}
+
         </div>
     );
 }

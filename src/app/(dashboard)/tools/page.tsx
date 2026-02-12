@@ -12,6 +12,7 @@ import {
 import type { Tool, ToolCategory } from '@/lib/db';
 import ToolCard from '@/components/tools/ToolCard';
 import Modal from '@/components/Modal';
+import SegmentedControl from '@/components/SegmentedControl';
 import { useToast } from '@/components/ToastProvider';
 import { useAuth } from '@/components/AuthProvider';
 import styles from './page.module.css';
@@ -95,6 +96,7 @@ export default function ToolsPage() {
     const [searchQuery, setSearchQuery] = useState('');
     const [filterCategory, setFilterCategory] = useState<string>('all');
     const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+    const [activeTab, setActiveTab] = useState<'registry' | 'management'>('registry');
     const [modalOpen, setModalOpen] = useState(false);
     const [editingTool, setEditingTool] = useState<Tool | null>(null);
     const [formData, setFormData] = useState<ToolFormData>(emptyForm);
@@ -243,94 +245,159 @@ export default function ToolsPage() {
                 </p>
             </div>
 
-            {/* Toolbar */}
-            <div className={`${styles.toolbar} animate-fade-in stagger-1`}>
-                <div className={styles.searchBar}>
-                    <Search size={18} className={styles.searchIcon} />
-                    <input
-                        type="text"
-                        placeholder="Search tools..."
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        className={styles.searchInput}
-                    />
-                </div>
-                <div className={styles.toolbarActions}>
-                    <div className={styles.filterGroup}>
-                        <Filter size={16} />
-                        <select
-                            value={filterCategory}
-                            onChange={(e) => setFilterCategory(e.target.value)}
-                            className={styles.filterSelect}
-                        >
-                            <option value="all">All Categories</option>
-                            {CATEGORIES.map((cat) => (
-                                <option key={cat} value={cat}>{cat}</option>
-                            ))}
-                        </select>
-                    </div>
-                    <div className={styles.viewToggle}>
-                        <button
-                            className={`${styles.viewBtn} ${viewMode === 'grid' ? styles.viewActive : ''}`}
-                            onClick={() => setViewMode('grid')}
-                            aria-label="Grid view"
-                        >
-                            <LayoutGrid size={16} />
-                        </button>
-                        <button
-                            className={`${styles.viewBtn} ${viewMode === 'list' ? styles.viewActive : ''}`}
-                            onClick={() => setViewMode('list')}
-                            aria-label="List view"
-                        >
-                            <List size={16} />
-                        </button>
-                    </div>
-                    <button className="btn btn-primary" onClick={openAddModal}>
-                        <Plus size={16} />
-                        Add Tool
-                    </button>
-                </div>
+            {/* Sub-Navigation */}
+            <div style={{ marginBottom: 'var(--space-lg)', display: 'flex', justifyContent: 'center' }}>
+                <SegmentedControl
+                    options={[
+                        { id: 'registry', label: 'Tool Registry', icon: <Wrench size={16} /> },
+                        { id: 'management', label: 'Management Actions', icon: <Filter size={16} /> },
+                    ]}
+                    activeId={activeTab}
+                    onChange={(id) => setActiveTab(id as 'registry' | 'management')}
+                />
             </div>
 
-            {/* Tool Grid / List */}
-            {loading ? (
-                <div className={styles.loadingGrid}>
-                    {[1, 2, 3, 4, 5, 6].map((i) => (
-                        <div key={i} className={`card ${styles.skeleton}`} />
-                    ))}
-                </div>
-            ) : filteredTools.length > 0 ? (
-                <div className={viewMode === 'grid' ? styles.toolGrid : styles.toolList}>
-                    {filteredTools.map((tool, i) => (
-                        <div key={tool.id} className={`animate-fade-in stagger-${Math.min(i + 1, 4)}`}>
-                            <ToolCard
-                                tool={tool}
-                                onEdit={openEditModal}
-                                onDelete={handleDelete}
-                                onToggleStatus={handleToggleStatus}
-                                onCertify={handleCertify}
+            {activeTab === 'registry' ? (
+                <>
+                    {/* Toolbar */}
+                    <div className={`${styles.toolbar} animate-fade-in stagger-1`}>
+                        <div className={styles.searchBar}>
+                            <Search size={18} className={styles.searchIcon} />
+                            <input
+                                type="text"
+                                placeholder="Search tools..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                className={styles.searchInput}
                             />
                         </div>
-                    ))}
-                </div>
-            ) : (
-                <div className="card">
-                    <div className="empty-state">
-                        <div className="empty-icon">
-                            <Wrench size={28} />
-                        </div>
-                        <h3>{searchQuery || filterCategory !== 'all' ? 'No tools match your filters' : 'No AI tools registered yet'}</h3>
-                        <p>
-                            {searchQuery || filterCategory !== 'all'
-                                ? 'Try adjusting your search or filter criteria.'
-                                : 'Add your first AI tool to start building your personal AI ecosystem map.'}
-                        </p>
-                        {!searchQuery && filterCategory === 'all' && (
+                        <div className={styles.toolbarActions}>
+                            <div className={styles.filterGroup}>
+                                <Filter size={16} />
+                                <select
+                                    value={filterCategory}
+                                    onChange={(e) => setFilterCategory(e.target.value)}
+                                    className={styles.filterSelect}
+                                >
+                                    <option value="all">All Categories</option>
+                                    {CATEGORIES.map((cat) => (
+                                        <option key={cat} value={cat}>{cat}</option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div className={styles.viewToggle}>
+                                <button
+                                    className={`${styles.viewBtn} ${viewMode === 'grid' ? styles.viewActive : ''}`}
+                                    onClick={() => setViewMode('grid')}
+                                    aria-label="Grid view"
+                                >
+                                    <LayoutGrid size={16} />
+                                </button>
+                                <button
+                                    className={`${styles.viewBtn} ${viewMode === 'list' ? styles.viewActive : ''}`}
+                                    onClick={() => setViewMode('list')}
+                                    aria-label="List view"
+                                >
+                                    <List size={16} />
+                                </button>
+                            </div>
                             <button className="btn btn-primary" onClick={openAddModal}>
                                 <Plus size={16} />
-                                Add Your First Tool
+                                Add Tool
                             </button>
-                        )}
+                        </div>
+                    </div>
+
+                    {/* Tool Grid / List */}
+                    {loading ? (
+                        <div className={styles.loadingGrid}>
+                            {[1, 2, 3, 4, 5, 6].map((i) => (
+                                <div key={i} className={`card ${styles.skeleton}`} />
+                            ))}
+                        </div>
+                    ) : filteredTools.length > 0 ? (
+                        <div className={viewMode === 'grid' ? styles.toolGrid : styles.toolList}>
+                            {filteredTools.map((tool, i) => (
+                                <div key={tool.id} className={`animate-fade-in stagger-${Math.min(i + 1, 4)}`}>
+                                    <ToolCard
+                                        tool={tool}
+                                        onEdit={openEditModal}
+                                        onDelete={handleDelete}
+                                        onToggleStatus={handleToggleStatus}
+                                        onCertify={handleCertify}
+                                    />
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="card">
+                            <div className="empty-state">
+                                <div className="empty-icon">
+                                    <Wrench size={28} />
+                                </div>
+                                <h3>{searchQuery || filterCategory !== 'all' ? 'No tools match your filters' : 'No AI tools registered yet'}</h3>
+                                <p>
+                                    {searchQuery || filterCategory !== 'all'
+                                        ? 'Try adjusting your search or filter criteria.'
+                                        : 'Add your first AI tool to start building your personal AI ecosystem map.'}
+                                </p>
+                                {!searchQuery && filterCategory === 'all' && (
+                                    <button className="btn btn-primary" onClick={openAddModal}>
+                                        <Plus size={16} />
+                                        Add Your First Tool
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+                    )}
+                </>
+            ) : (
+                <div className="animate-fade-in">
+                    {/* Management Summary Grid */}
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 'var(--space-lg)' }}>
+                        <div className="card">
+                            <h3 style={{ marginBottom: 'var(--space-md)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                <Wrench size={18} color="var(--accent-primary)" /> Inventory Health
+                            </h3>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-sm)' }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px' }}>
+                                    <span style={{ color: 'var(--text-secondary)' }}>Active Tools</span>
+                                    <span style={{ fontWeight: 600 }}>{activeCount}</span>
+                                </div>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px' }}>
+                                    <span style={{ color: 'var(--text-secondary)' }}>Paused Subscriptions</span>
+                                    <span style={{ fontWeight: 600 }}>{tools.filter(t => t.status === 'paused').length}</span>
+                                </div>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px' }}>
+                                    <span style={{ color: 'var(--text-secondary)' }}>Total Monthly Run Rate</span>
+                                    <span style={{ fontWeight: 600, color: 'var(--accent-primary)' }}>${totalSpend.toFixed(2)}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="card">
+                            <h3 style={{ marginBottom: 'var(--space-md)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                <Filter size={18} color="var(--accent-secondary)" /> Smart Filters
+                            </h3>
+                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--space-xs)' }}>
+                                <button className="badge badge-secondary" onClick={() => { setActiveTab('registry'); setFilterCategory('all'); setSearchQuery(''); }}>Reset All</button>
+                                <button className="badge" style={{ background: 'var(--danger-glow)', color: '#ef4444', border: 'none' }} onClick={() => { setActiveTab('registry'); setFilterCategory('all'); setSearchQuery(''); }}>High Risk Tools</button>
+                                <button className="badge" style={{ background: 'rgba(34, 197, 94, 0.1)', color: '#22c55e', border: 'none' }} onClick={() => { setActiveTab('registry'); setFilterCategory('all'); setSearchQuery(''); }}>Compliance Certified</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="card" style={{ marginTop: 'var(--space-lg)' }}>
+                        <div className="empty-state">
+                            <div className="empty-icon" style={{ background: 'var(--accent-primary-glow)' }}>
+                                <LayoutGrid size={28} color="var(--accent-primary)" />
+                            </div>
+                            <h3>Advanced Management Suite</h3>
+                            <p>Bulk actions, re-certification campaigns, and detailed usage auditing are coming soon.</p>
+                            <button className="btn btn-secondary" onClick={() => setActiveTab('registry')}>
+                                Return to Registry
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}

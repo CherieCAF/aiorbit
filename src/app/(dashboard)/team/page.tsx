@@ -9,6 +9,7 @@ import {
 import { Member, Invoice, Tool } from '@/lib/db';
 import { useToast } from '@/components/ToastProvider';
 import { useAuth } from '@/components/AuthProvider';
+import SegmentedControl from '@/components/SegmentedControl';
 import styles from './page.module.css';
 
 export default function TeamPage() {
@@ -150,19 +151,15 @@ export default function TeamPage() {
             </section>
 
             <main className="animate-fade-in stagger-4">
-                <div className="tabs" style={{ marginBottom: 'var(--space-lg)' }}>
-                    <button
-                        className={`tab ${activeTab === 'members' ? 'tab-active' : ''}`}
-                        onClick={() => setActiveTab('members')}
-                    >
-                        Member Directory
-                    </button>
-                    <button
-                        className={`tab ${activeTab === 'ledger' ? 'tab-active' : ''}`}
-                        onClick={() => setActiveTab('ledger')}
-                    >
-                        Company Ledger (Bank Sync)
-                    </button>
+                <div style={{ marginBottom: 'var(--space-lg)', display: 'flex', justifyContent: 'center' }}>
+                    <SegmentedControl
+                        options={[
+                            { id: 'members', label: 'Member Directory', icon: <Users size={16} /> },
+                            { id: 'ledger', label: 'Company Ledger', icon: <Receipt size={16} /> },
+                        ]}
+                        activeId={activeTab}
+                        onChange={(id) => setActiveTab(id as 'members' | 'ledger')}
+                    />
                 </div>
 
                 {activeTab === 'members' ? (

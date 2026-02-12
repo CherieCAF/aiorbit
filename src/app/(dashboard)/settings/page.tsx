@@ -14,6 +14,7 @@ import {
     Target,
     BookOpen,
     Lightbulb,
+    Mail,
 } from 'lucide-react';
 import { useToast } from '@/components/ToastProvider';
 import styles from './page.module.css';
@@ -23,6 +24,9 @@ export default function SettingsPage() {
     const [importing, setImporting] = useState(false);
     const [resetting, setResetting] = useState(false);
     const [showResetConfirm, setShowResetConfirm] = useState(false);
+    const [mailroomAlias, setMailroomAlias] = useState('billing@yourcompany.aiorbit.com');
+    const [extractionMode, setExtractionMode] = useState<'balanced' | 'strict'>('balanced');
+    const [autoSync, setAutoSync] = useState(true);
     const [dbStats, setDbStats] = useState<{ tools: number; goals: number; decisions: number; learning: number } | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const { addToast } = useToast();
@@ -161,6 +165,73 @@ export default function SettingsPage() {
                     <Download size={16} />
                     {exporting ? 'Exporting...' : 'Export All Data'}
                 </button>
+            </div>
+
+            {/* Mailroom Configuration */}
+            <div className={`card ${styles.section} animate-fade-in stagger-3`}>
+                <h3 className={styles.sectionTitle}>
+                    <Upload size={18} /> Mailroom Configuration
+                </h3>
+                <p className={styles.sectionDesc}>
+                    Configure your AI Mailroom to automatically extract and log invoices from your team's billing emails.
+                </p>
+
+                <div className={styles.formGroup}>
+                    <label className={styles.inputLabel}>Virtual Forwarding Alias</label>
+                    <div className={styles.inputWrapper}>
+                        <Mail size={16} className={styles.inputIcon} />
+                        <input
+                            type="text"
+                            className={styles.textField}
+                            value={mailroomAlias}
+                            onChange={(e) => setMailroomAlias(e.target.value)}
+                            placeholder="e.g. billing@company.aiorbit.com"
+                        />
+                    </div>
+                    <span className={styles.inputHint}>Ask your team to forward billing emails to this address.</span>
+                </div>
+
+                <div className={styles.settingsGrid}>
+                    <div className={styles.settingRow}>
+                        <div>
+                            <div className={styles.settingLabel}>Extraction Mode</div>
+                            <div className={styles.settingSublabel}>Balanced (fast & smart) vs Strict (high-confidence only)</div>
+                        </div>
+                        <div className={styles.toggleGroup}>
+                            <button
+                                className={`${styles.toggleBtn} ${extractionMode === 'balanced' ? styles.toggleActive : ''}`}
+                                onClick={() => setExtractionMode('balanced')}
+                            >
+                                Balanced
+                            </button>
+                            <button
+                                className={`${styles.toggleBtn} ${extractionMode === 'strict' ? styles.toggleActive : ''}`}
+                                onClick={() => setExtractionMode('strict')}
+                            >
+                                Strict
+                            </button>
+                        </div>
+                    </div>
+
+                    <div className={styles.settingRow}>
+                        <div>
+                            <div className={styles.settingLabel}>Auto-Sync Bank Charges</div>
+                            <div className={styles.settingSublabel}>Automatically match invoices to bank transactions upon ingestion</div>
+                        </div>
+                        <input
+                            type="checkbox"
+                            className={styles.checkbox}
+                            checked={autoSync}
+                            onChange={(e) => setAutoSync(e.target.checked)}
+                        />
+                    </div>
+                </div>
+
+                <div style={{ marginTop: 'var(--space-lg)' }}>
+                    <button className="btn btn-primary" onClick={() => addToast('Mailroom settings saved', 'success')}>
+                        Save Configuration
+                    </button>
+                </div>
             </div>
 
             {/* Import */}

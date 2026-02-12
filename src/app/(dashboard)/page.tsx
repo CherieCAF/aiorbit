@@ -21,6 +21,7 @@ import Link from 'next/link';
 import type { Tool, Goal, Decision } from '@/lib/db';
 import { generateInsights, type Insight } from '@/lib/insights';
 import { useAuth } from '@/components/AuthProvider';
+import SegmentedControl from '@/components/SegmentedControl';
 import styles from './page.module.css';
 
 const quickActions = [
@@ -245,19 +246,15 @@ export default function Dashboard() {
       <div className={`animate-fade-in stagger-2 ${styles.pulseSection}`}>
         <div className="section-header">
           <h2><Zap size={20} /> Executive Pulse</h2>
-          <div className={styles.pulseTabs}>
-            <button
-              className={`${styles.pulseTab} ${pulseTab === 'tool' ? styles.pulseTabActive : ''}`}
-              onClick={() => setPulseTab('tool')}
-            >
-              Top Tools
-            </button>
-            <button
-              className={`${styles.pulseTab} ${pulseTab === 'member' ? styles.pulseTabActive : ''}`}
-              onClick={() => setPulseTab('member')}
-            >
-              Top Staff
-            </button>
+          <div style={{ transform: 'scale(0.9)', transformOrigin: 'right' }}>
+            <SegmentedControl
+              options={[
+                { id: 'tool', label: 'Top Tools', icon: <Zap size={14} /> },
+                { id: 'member', label: 'Top Staff', icon: <Users size={14} /> },
+              ]}
+              activeId={pulseTab}
+              onChange={(id) => setPulseTab(id as 'tool' | 'member')}
+            />
           </div>
         </div>
 
