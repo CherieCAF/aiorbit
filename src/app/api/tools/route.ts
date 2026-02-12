@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getTools, createTool, updateTool, deleteTool, type ToolCategory } from '@/lib/db';
+import { getTools, createTool, updateTool, deleteTool, ensureAdmin, type ToolCategory } from '@/lib/db';
 
 export async function GET() {
     try {
@@ -14,11 +14,15 @@ export async function GET() {
 export async function POST(request: NextRequest) {
     try {
         const body = await request.json();
-        const { name, category, url, monthlyCost, dataAccess, status, purpose } = body;
+        const { name, category, url, monthlyCost, dataAccess, status, purpose, ownerId } = body;
 
         if (!name || !category) {
             return NextResponse.json({ error: 'Name and category are required' }, { status: 400 });
         }
+
+        // For V1 -> Team transition, default to the first admin if no owner provided
+        const admin = await ensureAdmin();
+        const finalOwnerId = ownerId || admin.id;
 
         const tool = await createTool({
             name,
@@ -28,6 +32,7 @@ export async function POST(request: NextRequest) {
             dataAccess: dataAccess || 'none',
             status: status || 'active',
             purpose: purpose || '',
+            ownerId: finalOwnerId,
         });
 
         return NextResponse.json(tool, { status: 201 });

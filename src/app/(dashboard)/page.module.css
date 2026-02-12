@@ -187,6 +187,88 @@
   animation: pulse 2s infinite;
 }
 
+/* Pulse Section */
+.pulseSection {
+  margin-bottom: var(--space-xl);
+}
+
+.pulseTabs {
+  display: flex;
+  gap: 4px;
+  background: rgba(255, 255, 255, 0.03);
+  padding: 4px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-subtle);
+}
+
+.pulseTab {
+  padding: 4px 12px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
+}
+
+.pulseTabActive {
+  background: var(--accent-primary);
+  color: white;
+}
+
+.pulseCard {
+  padding: var(--space-lg);
+}
+
+.pulseGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: var(--space-lg);
+}
+
+.pulseItem {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.itemHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.itemName {
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.itemValue {
+  font-size: var(--font-size-sm);
+  font-weight: 800;
+  color: var(--accent-primary);
+}
+
+.itemBar {
+  height: 6px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.itemFill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 1s ease-out;
+}
+
+.itemMeta {
+  font-size: 10px;
+  color: var(--text-tertiary);
+  font-weight: 500;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .mainGrid {

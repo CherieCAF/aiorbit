@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import {
     Search, ArrowRight, Wrench, Target, BookOpen,
-    Lightbulb, BarChart3, LayoutDashboard, Plus, Globe, Compass,
+    Lightbulb, BarChart3, LayoutDashboard, Plus, Globe, Compass, Users,
     Command, CornerDownLeft,
 } from 'lucide-react';
 import styles from './CommandPalette.module.css';
@@ -21,13 +21,14 @@ interface SearchResult {
 
 const NAV_ITEMS: SearchResult[] = [
     { id: 'nav-dashboard', title: 'Dashboard', subtitle: 'Command Center overview', category: 'navigation', icon: <LayoutDashboard size={16} />, href: '/' },
+    { id: 'nav-team', title: 'Team Governance', subtitle: 'Company AI oversight', category: 'navigation', icon: <Users size={16} />, href: '/team' },
+    { id: 'nav-analytics', title: 'Analytics', subtitle: 'Charts & insights', category: 'navigation', icon: <BarChart3 size={16} />, href: '/analytics' },
     { id: 'nav-tools', title: 'AI Tools', subtitle: 'Manage your tool registry', category: 'navigation', icon: <Wrench size={16} />, href: '/tools' },
+    { id: 'nav-directory', title: 'AI Directory', subtitle: 'Curated list of AI tools', category: 'navigation', icon: <Compass size={16} />, href: '/directory' },
     { id: 'nav-goals', title: 'Goals', subtitle: 'Track your objectives', category: 'navigation', icon: <Target size={16} />, href: '/goals' },
     { id: 'nav-decisions', title: 'Decisions', subtitle: 'Decision journal', category: 'navigation', icon: <BookOpen size={16} />, href: '/decisions' },
-    { id: 'nav-learning', title: 'Learning Feed', subtitle: 'Curated resources', category: 'navigation', icon: <Lightbulb size={16} />, href: '/learning' },
-    { id: 'nav-analytics', title: 'Analytics', subtitle: 'Charts & insights', category: 'navigation', icon: <BarChart3 size={16} />, href: '/analytics' },
-    { id: 'nav-directory', title: 'AI Directory', subtitle: 'Curated list of AI tools', category: 'navigation', icon: <Compass size={16} />, href: '/directory' },
     { id: 'nav-ecosystem', title: 'Ecosystem Map', subtitle: 'Visual tool-goal network', category: 'navigation', icon: <Globe size={16} />, href: '/ecosystem' },
+    { id: 'nav-learning', title: 'Learning Feed', subtitle: 'Curated resources', category: 'navigation', icon: <Lightbulb size={16} />, href: '/learning' },
 ];
 
 const ACTIONS: SearchResult[] = [

@@ -43,15 +43,19 @@ interface ToolCardProps {
     onEdit: (tool: Tool) => void;
     onDelete: (id: string) => void;
     onToggleStatus: (tool: Tool) => void;
+    onCertify?: (id: string) => void;
 }
 
-export default function ToolCard({ tool, onEdit, onDelete, onToggleStatus }: ToolCardProps) {
+export default function ToolCard({ tool, onEdit, onDelete, onToggleStatus, onCertify }: ToolCardProps) {
     const [menuOpen, setMenuOpen] = useState(false);
     const menuRef = useRef<HTMLDivElement>(null);
     const color = categoryColors[tool.category] || categoryColors.Other;
     const status = statusLabels[tool.status] || statusLabels.active;
     const dataAccess = dataAccessIcons[tool.dataAccess] || dataAccessIcons.none;
     const DataIcon = dataAccess.icon;
+
+    const isStale = tool.status === 'active' &&
+        (!tool.lastCertifiedAt || new Date(tool.lastCertifiedAt) < new Date(Date.now() - 30 * 24 * 60 * 60 * 1000));
 
     useEffect(() => {
         const handleClick = (e: MouseEvent) => {
@@ -64,7 +68,7 @@ export default function ToolCard({ tool, onEdit, onDelete, onToggleStatus }: Too
     }, []);
 
     return (
-        <div className={`card ${styles.toolCard}`}>
+        <div className={`card ${styles.toolCard} ${isStale ? styles.stale : ''}`}>
             {/* Category accent bar */}
             <div className={styles.accentBar} style={{ background: color }} />
 
@@ -109,6 +113,20 @@ export default function ToolCard({ tool, onEdit, onDelete, onToggleStatus }: Too
                 <p className={styles.purpose}>{tool.purpose}</p>
             )}
 
+            {/* Certification Status */}
+            {isStale && onCertify && (
+                <div className={styles.certificationAlert}>
+                    <ShieldAlert size={14} />
+                    <span>Recertification required</span>
+                    <button
+                        className={styles.certifyBtn}
+                        onClick={() => onCertify(tool.id)}
+                    >
+                        Confirm Usage
+                    </button>
+                </div>
+            )}
+
             {/* Footer */}
             <div className={styles.footer}>
                 <div className={styles.footerLeft}>
@@ -116,6 +134,11 @@ export default function ToolCard({ tool, onEdit, onDelete, onToggleStatus }: Too
                     <span className={styles.dataAccess} title={dataAccess.label}>
                         <DataIcon size={14} style={{ color: dataAccess.color }} />
                     </span>
+                    {tool.lastCertifiedAt && (
+                        <span className={styles.certifiedDate}>
+                            Verified {new Date(tool.lastCertifiedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                        </span>
+                    )}
                 </div>
                 <div className={styles.footerRight}>
                     {tool.monthlyCost > 0 && (

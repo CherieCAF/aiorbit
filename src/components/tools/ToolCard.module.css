@@ -118,6 +118,7 @@
     line-height: 1.5;
     display: -webkit-box;
     -webkit-line-clamp: 2;
+    line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
@@ -163,4 +164,43 @@
 
 .externalLink:hover {
     color: var(--accent-primary);
+}
+
+.stale {
+    border: 1px solid #f59e0b50;
+    box-shadow: 0 0 15px #f59e0b10;
+}
+
+.certificationAlert {
+    margin-top: var(--space-xs);
+    padding: var(--space-sm) var(--space-md);
+    background: rgba(245, 158, 11, 0.1);
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    font-size: 11px;
+    font-weight: 600;
+    color: #f59e0b;
+}
+
+.certifyBtn {
+    margin-left: auto;
+    padding: 4px 10px;
+    background: #f59e0b;
+    color: white;
+    border-radius: var(--radius-sm);
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.certifyBtn:hover {
+    background: #d97706;
+}
+
+.certifiedDate {
+    font-size: 10px;
+    color: var(--text-tertiary);
+    font-weight: 500;
 }

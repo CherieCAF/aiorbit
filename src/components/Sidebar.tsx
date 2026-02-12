@@ -13,6 +13,7 @@ import {
   Settings,
   Globe,
   Compass,
+  Users,
   ChevronLeft,
   ChevronRight,
   Orbit,
@@ -20,19 +21,23 @@ import {
   Moon,
   Menu,
   X,
+  LogOut,
+  User,
 } from 'lucide-react';
+import { useAuth } from './AuthProvider';
 import { useTheme } from './ThemeProvider';
 import styles from './Sidebar.module.css';
 
 const navItems = [
   { href: '/', label: 'Dashboard', icon: LayoutDashboard },
+  { href: '/team', label: 'Team', icon: Users },
+  { href: '/analytics', label: 'Analytics', icon: BarChart3 },
   { href: '/tools', label: 'AI Tools', icon: Wrench },
+  { href: '/directory', label: 'Directory', icon: Compass },
   { href: '/goals', label: 'Goals', icon: Target },
   { href: '/decisions', label: 'Decisions', icon: BookOpen },
-  { href: '/learning', label: 'Learning', icon: Lightbulb },
-  { href: '/analytics', label: 'Analytics', icon: BarChart3 },
-  { href: '/directory', label: 'Directory', icon: Compass },
   { href: '/ecosystem', label: 'Ecosystem', icon: Globe },
+  { href: '/learning', label: 'Learning', icon: Lightbulb },
   { href: '/settings', label: 'Settings', icon: Settings },
 ];
 
@@ -41,6 +46,7 @@ export default function Sidebar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = usePathname();
   const { theme, toggleTheme } = useTheme();
+  const { user, logout } = useAuth();
 
   // Close mobile menu on route change
   useEffect(() => {
@@ -110,6 +116,31 @@ export default function Sidebar() {
           {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
           {!collapsed && <span className={styles.themeLabel}>{theme === 'dark' ? 'Light' : 'Dark'}</span>}
         </button>
+
+        {/* User Profile & Logout */}
+        {user && (
+          <div className={styles.userSection}>
+            <div className={styles.userInfo}>
+              <div className={styles.userAvatar}>
+                <User size={16} />
+              </div>
+              {!collapsed && (
+                <div className={styles.userNameContainer}>
+                  <div className={styles.userName}>{user.name}</div>
+                  <div className={styles.userDept}>{user.department}</div>
+                </div>
+              )}
+            </div>
+            <button
+              className={styles.logoutBtn}
+              onClick={logout}
+              title="Log out"
+            >
+              <LogOut size={16} />
+              {!collapsed && <span>Logout</span>}
+            </button>
+          </div>
+        )}
 
         {/* Collapse Toggle */}
         <button

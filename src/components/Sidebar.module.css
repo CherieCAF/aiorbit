@@ -39,7 +39,6 @@
     color: white;
     flex-shrink: 0;
     box-shadow: var(--accent-glow);
-    animation: orbitSpin 20s linear infinite;
 }
 
 .logoText {
@@ -125,8 +124,10 @@
     font-size: var(--font-size-sm);
     font-weight: 500;
     transition: all var(--transition-fast);
-    margin-top: auto;
+    margin-bottom: var(--space-sm);
     cursor: pointer;
+    background: transparent;
+    border: none;
 }
 
 .themeToggle:hover {
@@ -134,11 +135,79 @@
     background: rgba(255, 255, 255, 0.05);
 }
 
-.themeLabel {
-    white-space: nowrap;
+/* User Section */
+.userSection {
+    margin-top: auto;
+    padding-top: var(--space-md);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    border-top: 1px solid var(--border-subtle);
 }
 
-/* Collapse Button */
+.userInfo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.userAvatar {
+    width: 32px;
+    height: 32px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-tertiary);
+    flex-shrink: 0;
+}
+
+.userNameContainer {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.userName {
+    font-size: var(--font-size-xs);
+    font-weight: 700;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.userDept {
+    font-size: 10px;
+    color: var(--text-tertiary);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+}
+
+.logoutBtn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: var(--radius-md);
+    color: #ef4444;
+    font-size: var(--font-size-xs);
+    font-weight: 700;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.logoutBtn:hover {
+    background: rgba(239, 68, 68, 0.08);
+    border-color: rgba(239, 68, 68, 0.2);
+}
+
+/* Collapse Toggle */
 .collapseBtn {
     display: flex;
     align-items: center;
@@ -150,11 +219,24 @@
     transition: all var(--transition-fast);
     align-self: center;
     margin-top: var(--space-sm);
+    background: transparent;
+    border: none;
 }
 
 .collapseBtn:hover {
     color: var(--text-primary);
     background: rgba(255, 255, 255, 0.05);
+}
+
+/* States */
+.collapsed .userSection {
+    align-items: center;
+}
+
+.collapsed .logoutBtn {
+    justify-content: center;
+    padding: 8px;
+    width: 32px;
 }
 
 /* Mobile */
@@ -182,6 +264,7 @@
         z-index: 200;
         box-shadow: var(--shadow-lg), var(--accent-glow);
         transition: transform 0.2s;
+        border: none;
     }
 
     .mobileMenuBtn:active {
@@ -206,7 +289,6 @@
     .sidebar.mobileOpen {
         transform: translateX(0) !important;
         width: var(--sidebar-width) !important;
-        padding: var(--space-lg) var(--space-md) !important;
     }
 
     .collapseBtn {

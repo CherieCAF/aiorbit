@@ -13,6 +13,7 @@ import type { Tool, ToolCategory } from '@/lib/db';
 import ToolCard from '@/components/tools/ToolCard';
 import Modal from '@/components/Modal';
 import { useToast } from '@/components/ToastProvider';
+import { useAuth } from '@/components/AuthProvider';
 import styles from './page.module.css';
 
 const CATEGORIES: ToolCategory[] = [
@@ -99,6 +100,7 @@ export default function ToolsPage() {
     const [formData, setFormData] = useState<ToolFormData>(emptyForm);
     const [saving, setSaving] = useState(false);
     const { addToast } = useToast();
+    const { user } = useAuth();
 
     const fetchTools = useCallback(async () => {
         try {
@@ -168,7 +170,7 @@ export default function ToolsPage() {
                 await fetch('/api/tools', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(formData),
+                    body: JSON.stringify({ ...formData, ownerId: user?.id }),
                 });
             }
             await fetchTools();
@@ -207,6 +209,21 @@ export default function ToolsPage() {
         } catch (err) {
             console.error('Failed to toggle status:', err);
             addToast('Failed to update tool status', 'error');
+        }
+    };
+
+    const handleCertify = async (id: string) => {
+        try {
+            await fetch('/api/tools/certify', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id }),
+            });
+            await fetchTools();
+            addToast('Tool usage confirmed');
+        } catch (err) {
+            console.error('Failed to certify tool:', err);
+            addToast('Failed to confirm usage', 'error');
         }
     };
 
@@ -291,6 +308,7 @@ export default function ToolsPage() {
                                 onEdit={openEditModal}
                                 onDelete={handleDelete}
                                 onToggleStatus={handleToggleStatus}
+                                onCertify={handleCertify}
                             />
                         </div>
                     ))}

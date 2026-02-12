@@ -10,6 +10,8 @@ export const metadata: Metadata = {
   description: "Manage your AI ecosystem. Track tools, set goals, log decisions, and learn continuously — all in one place.",
 };
 
+import { AuthProvider } from "@/components/AuthProvider";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -20,13 +22,9 @@ export default function RootLayout({
       <body>
         <ThemeProvider>
           <ToastProvider>
-            <CommandPalette />
-            <div className="app-layout">
-              <Sidebar />
-              <main className="main-content">
-                {children}
-              </main>
-            </div>
+            <AuthProvider>
+              {children}
+            </AuthProvider>
           </ToastProvider>
         </ThemeProvider>
       </body>
