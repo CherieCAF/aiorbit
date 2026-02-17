@@ -1,0 +1,305 @@
+.container {
+    min-height: 100vh;
+    background: radial-gradient(circle at top right, rgba(99, 102, 241, 0.15), transparent 400px),
+        radial-gradient(circle at bottom left, rgba(168, 85, 247, 0.15), transparent 400px),
+        var(--bg-main);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: var(--space-2xl) var(--space-lg);
+}
+
+.progressHeader {
+    width: 100%;
+    max-width: 600px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-2xl);
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: 300;
+    letter-spacing: 0.1em;
+    color: var(--text-primary);
+}
+
+.logo b {
+    color: var(--accent-primary);
+    font-weight: 800;
+}
+
+.steps {
+    display: flex;
+    gap: var(--space-xl);
+}
+
+.stepIndicator {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+    transition: all 0.3s ease;
+}
+
+.stepIndicator.active {
+    color: var(--accent-primary);
+}
+
+.cardWrapper {
+    width: 100%;
+    max-width: 600px;
+}
+
+.cardHeader {
+    text-align: center;
+    margin-bottom: var(--space-xl);
+}
+
+.iconCircle {
+    width: 56px;
+    height: 56px;
+    border-radius: var(--radius-full);
+    background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto var(--space-md);
+    box-shadow: 0 8px 16px rgba(99, 102, 241, 0.2);
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+}
+
+.group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.group label {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.group input {
+    padding: 12px 16px;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    transition: all 0.2s;
+}
+
+.group input:focus {
+    outline: none;
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.1);
+}
+
+.group input:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-lg);
+}
+
+/* Tool Selection */
+.toolSearch {
+    position: relative;
+    margin-bottom: var(--space-lg);
+}
+
+.toolSearch svg {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-tertiary);
+}
+
+.toolSearch input {
+    width: 100%;
+    padding: 12px 16px 12px 42px;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    color: var(--text-primary);
+}
+
+.toolList {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+    max-height: 400px;
+    overflow-y: auto;
+    padding-right: 6px;
+    margin-bottom: var(--space-xl);
+}
+
+.toolItem {
+    padding: var(--space-md);
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.toolItem:hover {
+    border-color: var(--accent-primary);
+    background: rgba(99, 102, 241, 0.05);
+}
+
+.toolItem.selected {
+    border-color: var(--accent-primary);
+    background: rgba(99, 102, 241, 0.1);
+}
+
+.toolCheck {
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--border-subtle);
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.selected .toolCheck {
+    background: var(--accent-primary);
+    border-color: var(--accent-primary);
+}
+
+.checkInner {
+    width: 8px;
+    height: 8px;
+    background: white;
+    border-radius: 1px;
+    opacity: 0;
+    transition: all 0.2s;
+}
+
+.selected .checkInner {
+    opacity: 1;
+}
+
+.toolInfo {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.toolName {
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.toolCat {
+    font-size: 11px;
+    color: var(--text-tertiary);
+}
+
+.toolPrice {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--accent-primary);
+}
+
+.actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: var(--space-xl);
+}
+
+/* Governance Sync */
+.syncList {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xl);
+    margin-bottom: var(--space-xl);
+}
+
+.syncItem {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+}
+
+.syncToolHead {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.syncRow {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: var(--space-md);
+}
+
+.syncGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.syncGroup label {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.syncGroup input {
+    padding: 10px 14px;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    font-size: 13px;
+}
+
+.syncGroup input:focus {
+    outline: none;
+    border-color: var(--accent-primary);
+}
+
+.loading {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-md);
+    color: var(--text-tertiary);
+}
+
+.loading svg {
+    width: 48px;
+    height: 48px;
+    color: var(--accent-primary);
+}

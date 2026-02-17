@@ -14,28 +14,38 @@ export async function GET() {
 export async function POST(request: NextRequest) {
     try {
         const body = await request.json();
-        const { name, category, url, monthlyCost, dataAccess, status, purpose, ownerId } = body;
+        const toolsToCreate = Array.isArray(body) ? body : [body];
 
-        if (!name || !category) {
-            return NextResponse.json({ error: 'Name and category are required' }, { status: 400 });
+        const admin = await ensureAdmin();
+        const results = [];
+
+        for (const item of toolsToCreate) {
+            const { name, category, url, monthlyCost, dataAccess, status, purpose, ownerId, billingEmail, paymentSuffix } = item;
+
+            if (!name || !category) {
+                continue; // Skip invalid entries in bulk
+            }
+
+            const finalOwnerId = ownerId || admin.id;
+
+            const tool = await createTool({
+                name,
+                category: category as ToolCategory,
+                url: url || '',
+                monthlyCost: monthlyCost || 0,
+                dataAccess: dataAccess || 'none',
+                status: status || 'active',
+                purpose: purpose || 'Added via API',
+                ownerId: finalOwnerId,
+                billingEmail: billingEmail || '',
+                paymentSuffix: paymentSuffix || ''
+            });
+            results.push(tool);
         }
 
-        // For V1 -> Team transition, default to the first admin if no owner provided
-        const admin = await ensureAdmin();
-        const finalOwnerId = ownerId || admin.id;
-
-        const tool = await createTool({
-            name,
-            category: category as ToolCategory,
-            url: url || '',
-            monthlyCost: monthlyCost || 0,
-            dataAccess: dataAccess || 'none',
-            status: status || 'active',
-            purpose: purpose || '',
-            ownerId: finalOwnerId,
+        return NextResponse.json(Array.isArray(body) ? results : results[0], {
+            status: results.length > 0 ? 201 : 400
         });
-
-        return NextResponse.json(tool, { status: 201 });
     } catch (error) {
         console.error('Failed to create tool:', error);
         return NextResponse.json({ error: 'Failed to create tool' }, { status: 500 });

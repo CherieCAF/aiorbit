@@ -16,6 +16,8 @@ export interface Tool {
     lastCertifiedAt?: string; // Last time the owner confirmed usage
     addedAt: string;
     updatedAt: string;
+    billingEmail?: string;
+    paymentSuffix?: string;
 }
 
 export interface Member {
@@ -28,6 +30,8 @@ export interface Member {
     aiBudget: number;
     password?: string; // Simulated password (hashed in real world)
     joinedAt: string;
+    status?: 'active' | 'invited';
+    inviteCode?: string;
 }
 
 export interface Invoice {
@@ -172,6 +176,7 @@ interface Database {
     members: Member[];
     invoices: Invoice[];
     transactions: Transaction[];
+    settings: Record<string, any>;
 }
 
 const DB_PATH = path.join(process.cwd(), 'data', 'db.json');
@@ -185,6 +190,13 @@ const DEFAULT_DB: Database = {
     members: [],
     invoices: [],
     transactions: [],
+    settings: {
+        mailroom: {
+            alias: 'billing@company.aiorbit.com',
+            mode: 'balanced',
+            autoSync: true
+        }
+    }
 };
 
 async function ensureDbExists(): Promise<void> {
@@ -210,6 +222,10 @@ async function writeDb(db: Database): Promise<void> {
 /** @internal DO NOT USE in production. Only for seeding/testing. */
 export async function experimental_overwriteDb(db: any): Promise<void> {
     await writeDb(db);
+}
+
+export async function resetDb(): Promise<void> {
+    await writeDb(DEFAULT_DB);
 }
 
 // ---- UUID Helper ----
@@ -675,5 +691,19 @@ export async function getSpendingInsights() {
     }).sort((a, b) => b.spend - a.spend).slice(0, 5);
 
     return { byTool, byMember };
+}
+
+// ---- Settings Operations ----
+
+export async function getSettings(): Promise<Record<string, any>> {
+    const db = await readDb();
+    return db.settings || DEFAULT_DB.settings;
+}
+
+export async function updateSettings(updates: any): Promise<Record<string, any>> {
+    const db = await readDb();
+    db.settings = { ...db.settings, ...updates };
+    await writeDb(db);
+    return db.settings;
 }
 

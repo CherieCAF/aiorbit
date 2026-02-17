@@ -19,6 +19,14 @@ export default function TeamPage() {
     const [tools, setTools] = useState<Tool[]>([]);
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState<'members' | 'ledger'>('members');
+    const [editingMember, setEditingMember] = useState<Member | null>(null);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
+    const [inviteEmail, setInviteEmail] = useState('');
+    const [inviteRole, setInviteRole] = useState<'admin' | 'member'>('member');
+    const [inviteDept, setInviteDept] = useState('Engineering');
+    const [inviteBudget, setInviteBudget] = useState(100);
+    const [lastInviteCode, setLastInviteCode] = useState<string | null>(null);
     const { addToast } = useToast();
     const { user } = useAuth();
 
@@ -74,6 +82,58 @@ export default function TeamPage() {
             }
         } catch (error) {
             addToast('Mailroom failed', 'error');
+        }
+    };
+
+    const handleUpdateMember = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!editingMember) return;
+
+        try {
+            const res = await fetch('/api/members', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(editingMember),
+            });
+
+            if (res.ok) {
+                addToast('Member updated successfully', 'success');
+                setIsEditModalOpen(false);
+                setEditingMember(null);
+                fetchData();
+            } else {
+                throw new Error();
+            }
+        } catch (error) {
+            addToast('Failed to update member', 'error');
+        }
+    };
+
+    const handleInviteMember = async (e: React.FormEvent) => {
+        e.preventDefault();
+        try {
+            const res = await fetch('/api/invite', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    email: inviteEmail,
+                    role: inviteRole,
+                    department: inviteDept,
+                    aiBudget: inviteBudget
+                })
+            });
+            if (res.ok) {
+                const data = await res.json();
+                setLastInviteCode(data.inviteCode);
+                addToast(`Invite generated for ${inviteEmail}`, 'success');
+                // Don't close immediately, show the code
+                setInviteEmail('');
+                fetchData();
+            } else {
+                throw new Error();
+            }
+        } catch {
+            addToast('Failed to generate invite', 'error');
         }
     };
 
@@ -237,8 +297,17 @@ export default function TeamPage() {
                                         <UploadCloud size={16} /> Import Team (.csv)
                                     </button>
                                 </div>
-                                <button className="btn btn-primary btn-sm">
-                                    <UserPlus size={16} /> Add Member
+                                <button
+                                    className="btn btn-secondary btn-sm"
+                                    onClick={() => setIsInviteModalOpen(true)}
+                                >
+                                    <Mail size={16} style={{ marginRight: '6px' }} /> Invite Member
+                                </button>
+                                <button
+                                    className="btn btn-primary btn-sm"
+                                    onClick={() => setIsInviteModalOpen(true)}
+                                >
+                                    <UserPlus size={16} style={{ marginRight: '6px' }} /> Add Member
                                 </button>
                             </div>
                         </div>
@@ -271,7 +340,16 @@ export default function TeamPage() {
                                             </td>
                                             <td>{member.department}</td>
                                             <td>
-                                                <span className="badge badge-info">{member.role}</span>
+                                                <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+                                                    <span className={`badge ${member.role === 'admin' ? 'badge-primary' : 'badge-info'}`}>
+                                                        {member.role}
+                                                    </span>
+                                                    {member.status === 'invited' && (
+                                                        <span className="badge" style={{ background: 'var(--bg-tertiary)', color: 'var(--text-tertiary)', fontSize: '9px' }}>
+                                                            INVITED
+                                                        </span>
+                                                    )}
+                                                </div>
                                             </td>
                                             <td className={styles.budgetRow}>
                                                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px' }}>
@@ -294,7 +372,15 @@ export default function TeamPage() {
                                                 )}
                                             </td>
                                             <td>
-                                                <button className="btn btn-ghost btn-sm">Manage</button>
+                                                <button
+                                                    className="btn btn-ghost btn-sm"
+                                                    onClick={() => {
+                                                        setEditingMember(member);
+                                                        setIsEditModalOpen(true);
+                                                    }}
+                                                >
+                                                    Manage
+                                                </button>
                                             </td>
                                         </tr>
                                     ))}
@@ -392,6 +478,206 @@ export default function TeamPage() {
                         </button>
                     </div>
                 </section>
+
+                {/* Edit Member Modal */}
+                {isEditModalOpen && editingMember && (
+                    <div className={styles.modalOverlay}>
+                        <div className={`card ${styles.modalCard} animate-scale-in`}>
+                            <div className={styles.modalHeader}>
+                                <h3>Manage Member</h3>
+                                <button className={styles.closeBtn} onClick={() => setIsEditModalOpen(false)}>×</button>
+                            </div>
+                            <form onSubmit={handleUpdateMember} className={styles.editForm}>
+                                <div className={styles.formGroup}>
+                                    <label>Name</label>
+                                    <input
+                                        type="text"
+                                        value={editingMember.name}
+                                        onChange={(e) => setEditingMember({ ...editingMember, name: e.target.value })}
+                                        className={styles.input}
+                                        required
+                                    />
+                                </div>
+                                <div className={styles.formGroup}>
+                                    <label>Email</label>
+                                    <input
+                                        type="email"
+                                        value={editingMember.email}
+                                        disabled
+                                        className={styles.input}
+                                    />
+                                    <span className={styles.inputHint}>Email cannot be changed after registration.</span>
+                                </div>
+                                <div className={styles.row}>
+                                    <div className={styles.formGroup}>
+                                        <label>Department</label>
+                                        <select
+                                            value={editingMember.department}
+                                            onChange={(e) => setEditingMember({ ...editingMember, department: e.target.value })}
+                                            className={styles.input}
+                                        >
+                                            <option value="Engineering">Engineering</option>
+                                            <option value="Marketing">Marketing</option>
+                                            <option value="Product">Product</option>
+                                            <option value="Operations">Operations</option>
+                                            <option value="Design">Design</option>
+                                        </select>
+                                    </div>
+                                    <div className={styles.formGroup}>
+                                        <label>Role</label>
+                                        <select
+                                            value={editingMember.role}
+                                            onChange={(e) => setEditingMember({ ...editingMember, role: e.target.value as 'admin' | 'member' })}
+                                            className={styles.input}
+                                        >
+                                            <option value="member">Team Member</option>
+                                            <option value="admin">Governance Lead (Admin)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div className={styles.formGroup}>
+                                    <label>AI Budget (Monthly)</label>
+                                    <div className={styles.budgetInputWrapper}>
+                                        <span className={styles.currencyPrefix}>$</span>
+                                        <input
+                                            type="number"
+                                            value={editingMember.aiBudget}
+                                            onChange={(e) => setEditingMember({ ...editingMember, aiBudget: parseInt(e.target.value) || 0 })}
+                                            className={styles.input}
+                                            min="0"
+                                            required
+                                        />
+                                    </div>
+                                    <span className={styles.inputHint}>Total spending limit across all AI tools.</span>
+                                </div>
+                                <div className={styles.modalActions}>
+                                    <button type="button" className="btn btn-secondary" onClick={() => setIsEditModalOpen(false)}>
+                                        Cancel
+                                    </button>
+                                    <button type="submit" className="btn btn-primary">
+                                        Save Changes
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                )}
+
+                {/* Invite Member Modal */}
+                {isInviteModalOpen && (
+                    <div className={styles.modalOverlay}>
+                        <div className={`card ${styles.modalCard} animate-scale-in`}>
+                            <div className={styles.modalHeader}>
+                                <h3>Invite Team Member</h3>
+                                <button className={styles.closeBtn} onClick={() => {
+                                    setIsInviteModalOpen(false);
+                                    setLastInviteCode(null);
+                                }}>×</button>
+                            </div>
+
+                            {lastInviteCode ? (
+                                <div className={styles.successState}>
+                                    <div className={styles.successIcon}>
+                                        <CheckCircle2 size={48} />
+                                    </div>
+                                    <h4>Invite Code Generated!</h4>
+                                    <p>Share this unique link with the new member to complete their onboarding.</p>
+
+                                    <div className={styles.inviteLinkBox}>
+                                        <code>{window.location.origin}/onboarding?code={lastInviteCode}</code>
+                                        <button
+                                            className="btn btn-sm btn-ghost"
+                                            onClick={() => {
+                                                navigator.clipboard.writeText(`${window.location.origin}/onboarding?code=${lastInviteCode}`);
+                                                addToast('Link copied to clipboard', 'info');
+                                            }}
+                                        >
+                                            Copy Link
+                                        </button>
+                                    </div>
+
+                                    <button
+                                        className="btn btn-primary w-full"
+                                        style={{ marginTop: 'var(--space-lg)' }}
+                                        onClick={() => {
+                                            setIsInviteModalOpen(false);
+                                            setLastInviteCode(null);
+                                        }}
+                                    >
+                                        Done
+                                    </button>
+                                </div>
+                            ) : (
+                                <form onSubmit={handleInviteMember} className={styles.editForm}>
+                                    <div className={styles.formGroup}>
+                                        <label>Work Email</label>
+                                        <input
+                                            type="email"
+                                            placeholder="colleague@company.com"
+                                            value={inviteEmail}
+                                            onChange={(e) => setInviteEmail(e.target.value)}
+                                            className={styles.input}
+                                            required
+                                        />
+                                    </div>
+                                    <div className={styles.row}>
+                                        <div className={styles.formGroup}>
+                                            <label>Department</label>
+                                            <select
+                                                value={inviteDept}
+                                                onChange={(e) => setInviteDept(e.target.value)}
+                                                className={styles.input}
+                                            >
+                                                <option value="Engineering">Engineering</option>
+                                                <option value="Marketing">Marketing</option>
+                                                <option value="Product">Product</option>
+                                                <option value="Operations">Operations</option>
+                                                <option value="Design">Design</option>
+                                            </select>
+                                        </div>
+                                        <div className={styles.formGroup}>
+                                            <label>Role</label>
+                                            <select
+                                                value={inviteRole}
+                                                onChange={(e) => setInviteRole(e.target.value as 'admin' | 'member')}
+                                                className={styles.input}
+                                            >
+                                                <option value="member">Team Member</option>
+                                                <option value="admin">Governance Lead (Admin)</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div className={styles.formGroup}>
+                                        <label>Initial AI Budget</label>
+                                        <div className={styles.budgetInputWrapper}>
+                                            <span className={styles.currencyPrefix}>$</span>
+                                            <input
+                                                type="number"
+                                                value={inviteBudget}
+                                                onChange={(e) => setInviteBudget(parseInt(e.target.value) || 0)}
+                                                className={styles.input}
+                                                min="0"
+                                                required
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className={styles.modalActions}>
+                                        <button
+                                            type="button"
+                                            className="btn btn-secondary"
+                                            onClick={() => setIsInviteModalOpen(false)}
+                                        >
+                                            Cancel
+                                        </button>
+                                        <button type="submit" className="btn btn-primary">
+                                            Generate Invite Code
+                                        </button>
+                                    </div>
+                                </form>
+                            )}
+                        </div>
+                    </div>
+                )}
             </main>
         </div>
     );

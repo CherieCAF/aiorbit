@@ -12,6 +12,7 @@ export default function SignupPage() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [department, setDepartment] = useState('Engineering');
+    const [role, setRole] = useState<'admin' | 'member'>('member');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
 
@@ -27,7 +28,7 @@ export default function SignupPage() {
             const res = await fetch('/api/auth/signup', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name, email, password, department }),
+                body: JSON.stringify({ name, email, password, department, role }),
             });
 
             const data = await res.json();
@@ -113,6 +114,23 @@ export default function SignupPage() {
                                 <option value="Operations">Operations</option>
                                 <option value="Design">Design</option>
                                 <option value="Other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div className={styles.inputGroup}>
+                        <label htmlFor="role">Role</label>
+                        <div className={styles.inputWrapper}>
+                            <ShieldCheck size={16} className={styles.inputIcon} />
+                            <select
+                                id="role"
+                                className={styles.input}
+                                value={role}
+                                onChange={(e) => setRole(e.target.value as 'admin' | 'member')}
+                                required
+                            >
+                                <option value="member">Team Member</option>
+                                <option value="admin">Governance Lead (Admin)</option>
                             </select>
                         </div>
                     </div>

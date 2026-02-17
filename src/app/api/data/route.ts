@@ -58,8 +58,8 @@ export async function POST(request: NextRequest) {
 // Reset database
 export async function DELETE() {
     try {
-        const emptyDb = { tools: [], goals: [], decisions: [], learning: [] };
-        await fs.writeFile(DB_PATH, JSON.stringify(emptyDb, null, 2));
+        const { resetDb } = await import('@/lib/db');
+        await resetDb();
         return NextResponse.json({ message: 'Database reset successfully' });
     } catch {
         return NextResponse.json({ error: 'Failed to reset database' }, { status: 500 });

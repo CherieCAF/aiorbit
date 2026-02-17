@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import {
     Settings,
     Download,
@@ -17,6 +17,7 @@ import {
     Mail,
 } from 'lucide-react';
 import { useToast } from '@/components/ToastProvider';
+import { useAuth } from '@/components/AuthProvider';
 import styles from './page.module.css';
 
 export default function SettingsPage() {
@@ -24,29 +25,45 @@ export default function SettingsPage() {
     const [importing, setImporting] = useState(false);
     const [resetting, setResetting] = useState(false);
     const [showResetConfirm, setShowResetConfirm] = useState(false);
-    const [mailroomAlias, setMailroomAlias] = useState('billing@yourcompany.aiorbit.com');
+    const [settingsLoading, setSettingsLoading] = useState(true);
+    const [mailroomAlias, setMailroomAlias] = useState('');
     const [extractionMode, setExtractionMode] = useState<'balanced' | 'strict'>('balanced');
     const [autoSync, setAutoSync] = useState(true);
     const [dbStats, setDbStats] = useState<{ tools: number; goals: number; decisions: number; learning: number } | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const { addToast } = useToast();
+    const { logout } = useAuth();
 
-    // Fetch DB stats on load
-    useState(() => {
-        Promise.all([
-            fetch('/api/tools').then(r => r.json()),
-            fetch('/api/goals').then(r => r.json()),
-            fetch('/api/decisions').then(r => r.json()),
-            fetch('/api/learning').then(r => r.json()),
-        ]).then(([t, g, d, l]) => {
-            setDbStats({
-                tools: Array.isArray(t) ? t.length : 0,
-                goals: Array.isArray(g) ? g.length : 0,
-                decisions: Array.isArray(d) ? d.length : 0,
-                learning: Array.isArray(l) ? l.length : 0,
-            });
-        }).catch(() => { });
-    });
+    // Fetch DB stats and settings on load
+    useEffect(() => {
+        const load = async () => {
+            try {
+                const [t, g, d, l, s] = await Promise.all([
+                    fetch('/api/tools').then(r => r.json()),
+                    fetch('/api/goals').then(r => r.json()),
+                    fetch('/api/decisions').then(r => r.json()),
+                    fetch('/api/learning').then(r => r.json()),
+                    fetch('/api/settings').then(r => r.json()),
+                ]);
+
+                setDbStats({
+                    tools: Array.isArray(t) ? t.length : 0,
+                    goals: Array.isArray(g) ? g.length : 0,
+                    decisions: Array.isArray(d) ? d.length : 0,
+                    learning: Array.isArray(l) ? l.length : 0,
+                });
+
+                if (s?.mailroom) {
+                    setMailroomAlias(s.mailroom.alias);
+                    setExtractionMode(s.mailroom.mode);
+                    setAutoSync(s.mailroom.autoSync);
+                }
+            } catch (err) { } finally {
+                setSettingsLoading(false);
+            }
+        };
+        load();
+    }, []);
 
     const handleExport = async () => {
         setExporting(true);
@@ -100,13 +117,35 @@ export default function SettingsPage() {
         setResetting(true);
         try {
             await fetch('/api/data', { method: 'DELETE' });
-            setDbStats({ tools: 0, goals: 0, decisions: 0, learning: 0 });
-            setShowResetConfirm(false);
             addToast('All data has been reset', 'info');
+            logout();
         } catch {
             addToast('Failed to reset data', 'error');
         } finally {
             setResetting(false);
+        }
+    };
+
+    const handleSaveMailroom = async () => {
+        try {
+            const res = await fetch('/api/settings', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    mailroom: {
+                        alias: mailroomAlias,
+                        mode: extractionMode,
+                        autoSync
+                    }
+                })
+            });
+            if (res.ok) {
+                addToast('Mailroom settings saved successfully', 'success');
+            } else {
+                throw new Error();
+            }
+        } catch {
+            addToast('Failed to save settings', 'error');
         }
     };
 
@@ -228,8 +267,12 @@ export default function SettingsPage() {
                 </div>
 
                 <div style={{ marginTop: 'var(--space-lg)' }}>
-                    <button className="btn btn-primary" onClick={() => addToast('Mailroom settings saved', 'success')}>
-                        Save Configuration
+                    <button
+                        className="btn btn-primary"
+                        onClick={handleSaveMailroom}
+                        disabled={settingsLoading}
+                    >
+                        {settingsLoading ? 'Loading...' : 'Save Configuration'}
                     </button>
                 </div>
             </div>
